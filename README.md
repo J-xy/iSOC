@@ -25,29 +25,37 @@ The evidence-request section is the primary output, not a fallback.
 
 ```
 soc-triage/
-├── SKILL.md                       # workflow, filling rules, guardrails
+├── SKILL.md                       # workflow, five-question frame, filling rules, guardrails
 ├── references/
 │   ├── verdict-rubric.md          # verdict, confidence, severity definitions
-│   ├── aws-identity.md            # TODO
-│   ├── edr.md                     # TODO
-│   ├── cspm.md                    # TODO
-│   └── saas-identity.md           # TODO
-├── assets/
-│   └── handoff.md                 # output template
-└── examples/                      # worked triage output
-    ├── aws-guardduty-iam-escalation.md
-    └── entra-oauth-illicit-consent.md
+│   ├── aws-identity.md            # GuardDuty / CloudTrail / STS / S3
+│   ├── edr.md                     # CrowdStrike, Defender, SentinelOne
+│   ├── cspm.md                    # Wiz, Prisma, Orca, Security Hub
+│   └── saas-identity.md           # Entra ID, Okta
+└── assets/                        # worked triage output
+    ├── aws_handoff.md             # GuardDuty IAM privilege escalation
+    └── oauth_handoff.md           # Entra ID illicit OAuth consent
 ```
 
 ## Status
 
-Work in progress. SKILL.md workflow and guardrails are written; the verdict
-rubric and handoff template are complete. The four source reference files are
-not yet written, and several SKILL.md sections are still marked TODO.
+SKILL.md is complete: workflow, the five-question frame, filling rules,
+guardrails, and the reference map. The verdict rubric and all four source
+reference files are written.
 
-The handoff template has been stress-tested against two structurally different
+Each reference file carries the same sections — alert types, log sources and
+fields to name, time windows, telemetry that is not on by default, what
+containment clears and what it leaves, common false positives, hypothesis
+clauses, and severity — so the skill can rely on consistent structure whatever
+the source class.
+
+Outstanding: a blank output template at `assets/handoff.md`, referenced by
+workflow step 6 and not yet written. Until it exists the two worked examples
+define the section order.
+
+The output structure has been stress-tested against two structurally different
 alerts — a GuardDuty IAM privilege-escalation sequence and an Entra ID illicit
-OAuth consent grant — both included under `examples/`.
+OAuth consent grant — both under `assets/`.
 
 ## Design notes
 
