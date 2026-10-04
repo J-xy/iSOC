@@ -111,8 +111,10 @@ setuid binaries, and MOTD scripts.
   removable media, and VPN or RDP logon events for that host.
 - **Lateral movement:** T to now, plus outbound 4624 type 3 and type 10 from
   this host, and inbound to hosts sharing the same credential.
-- **Persistence sweep:** unbounded. The artifact may predate the detection by
-  months, so ask for the artifact's own creation timestamp.
+- **Persistence sweep:** a current-state query. Write "state as of now" and ask
+  for each artifact's own creation timestamp; the artifact may predate the
+  detection by months. Pair it with the creation-event logs (4698, 7045, file
+  writes) from the earliest retained record to now.
 - **Beaconing:** T-30d on proxy and DNS for the C2 indicator, looking for
   regular intervals rather than volume.
 - **Credential lifetime after theft:** Kerberos TGT default 10 hours with a
