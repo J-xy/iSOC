@@ -233,9 +233,10 @@ Too generic — fits any consent-grant alert:
 > Confirmed if audit logs show the application was used maliciously.
 
 Specific enough to query:
-> Confirmed if Entra **service principal** sign-in logs for App ID
-> 7d1e9a3f-2b88-4c10-9f55-c0aa41e2b6d1 show at least one token issuance after
-> 2026-08-01T03:13:58Z, and the Exchange unified audit log shows
+> Confirmed if Entra **non-interactive user** sign-in logs for the
+> consenting user, filtered to App ID 7d1e9a3f-2b88-4c10-9f55-c0aa41e2b6d1,
+> show at least one token issuance after 2026-08-01T03:13:58Z (delegated
+> consent; for application permissions, use service principal sign-ins), and the Exchange unified audit log shows
 > `New-InboxRule` attributed to that service principal — noting that
 > `MailItemsAccessed` is unavailable on E3, so read activity cannot be
 > established from this tenant's licence tier.

@@ -1,0 +1,57 @@
+{
+  "aws": {
+    "calls": [
+      "Suspicious — unresolved"
+    ],
+    "severity": "High",
+    "must": {
+      "persistence key named": "AKIAEXAMPLESVCBKUP01",
+      "change record requested": "change[- ]?(record|management)"
+    },
+    "must_not": {}
+  },
+  "oauth": {
+    "calls": [
+      "Suspicious — unresolved"
+    ],
+    "severity": "High",
+    "must": {
+      "delegated token use in non-interactive sign-ins": "non-interactive",
+      "password reset does not contain": "(reset|resetting)[^\\n]{0,80}does NOT contain|does NOT contain[^\\n]{0,80}reset"
+    },
+    "must_not": {}
+  },
+  "cspm": {
+    "calls": [
+      "Suspicious — unresolved"
+    ],
+    "severity": "High",
+    "must": {
+      "T1 condition, not an event": "condition",
+      "T2 provenance of the policy change": "PutBucketPolicy|PutPublicAccessBlock|DeletePublicAccessBlock",
+      "T3 data events off by default": "data events",
+      "T4 account-level Block Public Access unverified": "account[- ]level",
+      "T6 IaC module named in remediation": "modules/data-exports"
+    },
+    "must_not": {
+      "T3 null read as clean": "(no|without) (evidence of )?exfiltration (occurred|happened)|was not (accessed|exfiltrated)"
+    }
+  },
+  "edr": {
+    "calls": [
+      "Malicious",
+      "Suspicious — unresolved"
+    ],
+    "severity": "High",
+    "must": {
+      "T2 web server parent named": "w3wp\\.exe",
+      "T2 webshell named": "webshell|web shell",
+      "T3/T4 script block logging requested": "4104|script[- ]block",
+      "T5 IIS logs or aspx write requested": "\\.aspx|IIS log"
+    },
+    "must_not": {
+      "T1 'threat was blocked' as closure": "threat was (blocked|prevented)\\.",
+      "T3 invented URL path on 203.0.113.45": "203\\.0\\.113\\.45(:80)?/\\S+"
+    }
+  }
+}

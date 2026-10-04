@@ -1,0 +1,59 @@
+{
+  "_note": "Synthetic held-out payload for testing. No worked example exists for this alert. All identifiers are fictional.",
+  "issue": {
+    "id": "wiz-issue-8b3f2d71-4c6a-4e19-b0d5-7a92e1c4f630",
+    "sourceRule": {
+      "id": "wc-id-1287",
+      "name": "S3 bucket allows public read access via bucket policy"
+    },
+    "severity": "CRITICAL",
+    "status": "OPEN",
+    "createdAt": "2026-09-28T06:14:37Z",
+    "updatedAt": "2026-10-02T06:11:52Z",
+    "lastScanAt": "2026-10-02T06:11:52Z",
+    "projects": [{ "name": "Finance Platform" }],
+    "entitySnapshot": {
+      "type": "BUCKET",
+      "name": "acme-payroll-exports",
+      "externalId": "arn:aws:s3:::acme-payroll-exports",
+      "cloudPlatform": "AWS",
+      "region": "us-east-1",
+      "subscriptionExternalId": "582304917765",
+      "subscriptionName": "acme-finance-prod",
+      "createdAt": "2025-11-04T17:22:09Z",
+      "tags": {
+        "managed-by": "terraform",
+        "module": "modules/data-exports",
+        "owner": "finance-data-eng",
+        "env": "prod"
+      }
+    },
+    "evidence": {
+      "isAccessibleFromInternet": true,
+      "accessibleFromInternetReason": "Bucket policy grants s3:GetObject to Principal \"*\" and bucket-level Block Public Access is disabled",
+      "bucketPolicy": {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Sid": "AllowExportConsumers",
+            "Effect": "Allow",
+            "Principal": "*",
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::acme-payroll-exports/*"
+          }
+        ]
+      },
+      "bucketPublicAccessBlock": {
+        "BlockPublicAcls": false,
+        "IgnorePublicAcls": false,
+        "BlockPublicPolicy": false,
+        "RestrictPublicBuckets": false
+      },
+      "accountPublicAccessBlock": "NOT_COLLECTED",
+      "encryption": "SSE-S3",
+      "versioning": "Enabled",
+      "objectCount": 14382,
+      "dataFindings": "NOT_SCANNED"
+    }
+  }
+}

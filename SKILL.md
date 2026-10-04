@@ -6,17 +6,71 @@ description: Triage a single security alert and produce an analyst handoff with 
 # SOC Alert Triage
 
 ## What this does
-One paragraph. Reason-only tier-1/tier-2 triage over a single alert from AWS,
-EDR, CSPM, or SaaS identity. Output is exactly one artifact: the handoff.
+Triages one security alert from AWS identity, EDR, CSPM, or SaaS identity and
+produces one artifact: an analyst handoff. The handoff scores verdict,
+confidence, and severity separately; sets at least one benign and one
+malicious explanation against each other, each with a queryable confirmation
+condition; and lists evidence requests in priority order, each naming the log
+source, field, and window. It is written for the tier-1/tier-2 analyst who
+will run those queries. The evidence plan is the main product, not the
+verdict: the skill can rarely confirm anything, and it says so.
+
+## Boundary: reason-only
+This skill reasons over the text it is given. It does not:
+
+- **Hold or request credentials.** If keys, tokens, session cookies, or
+  passwords appear in the input, do not use or repeat them. Note in
+  Assumptions that secrets were present and recommend rotation if they may be
+  live.
+- **Call tools or run queries.** No API calls, log searches, threat-intel
+  lookups, or web fetches, even when such tools are available in the session.
+  Every "check X" becomes an evidence request.
+- **Take actions.** No containment, no ticket creation, no contacting users.
+  Recommended action is written for a human to carry out.
+
+If asked to "go check" something, write it as an evidence request and state
+that the skill does not execute it. Every handoff carries the header line
+`Mode: Reason-only — no evidence retrieved.`
 
 ## Workflow
-1. Normalize — thin common core (who/what/when/source/vendor severity) plus
-   an unmodified source-specific payload block.
+1. Normalize the input against the Input contract below — a thin common core
+   plus the unmodified source-specific payload.
 2. Identify source class, read the matching file in references/.
 3. Run the five-question frame.
 4. Score verdict / confidence / severity against references/verdict-rubric.md.
 5. Build evidence requests, ordered by uncertainty resolved.
-6. Emit assets/handoff.md. Nothing else. No chat commentary alongside it.
+6. Fill `assets/handoff.md` in section order and run the Failure modes check.
+   Emit the handoff and nothing else. No chat commentary alongside it.
+
+## Input contract
+
+**Core fields.** Normalize these at step 1; they populate the handoff header
+and the Raw section.
+
+| Field | Example | If missing from the payload |
+| --- | --- | --- |
+| Alert ID | `6cb8f4e2-…` | Write "not in payload." |
+| Detection type / title | `PrivilegeEscalation:IAMUser/AnomalousBehavior` | Ask for it; do not triage without it. |
+| Source and vendor | GuardDuty, Falcon, Wiz, Entra ID | Infer from payload shape and say so. |
+| Fired time | `2026-07-31T18:42:11Z` | Evidence request. |
+| Event time(s) | earliest event timestamp in the payload | Anchor windows to fired time and flag detection lag. |
+| Primary entity | role ARN, `aid`, resource ARN, UPN | Ask for it; do not triage without it. |
+| Vendor severity | High / 8.0 | Write "not in payload." It does not affect scoring. |
+
+**Source-specific payload.** Keep it verbatim in Raw. The fields below are
+what the skill looks for; the reference file for the source has the full list.
+
+| Source class | Expected payload | Key fields | Time anchor |
+| --- | --- | --- | --- |
+| AWS identity | GuardDuty finding JSON and/or CloudTrail records | `userIdentity.arn`, `eventName`, `sourceIPAddress`, `userAgent`, `requestParameters`; the instance's own IP for `assumed-role/…/i-…` | `eventTime` |
+| EDR | Detection record plus process tree | disposition, `aid` / `ComputerName`, `UserName`, image, command line, parent, hashes | `ProcessStartTime` |
+| CSPM | Finding plus resource configuration | resource ID, rule, the condition itself, exposure path | introduced time and first-detected time — not an event |
+| SaaS identity | Entra ID sign-in / audit event or Okta System Log event | UPN, app ID, IP and ASN, `authenticationProtocol`, result code, consent scopes, `correlationId` | sign-in or audit event time |
+
+**Edge cases.** If several alerts are pasted, triage one and list the others
+as related in What fired and why. If the source class is ambiguous, pick the
+nearest and state which. Never fill a missing field with a plausible value —
+the gap is an evidence request.
 
 ## The five-question frame
 Run these in order. Each one feeds a specific section of the handoff.
@@ -84,7 +138,8 @@ and score severity independently against the rubric.
 
 ### Windows
 Every evidence request carries an explicit window with a bound at each end,
-written as absolute timestamps from the alert, not relative language.
+written as full ISO-8601 timestamps from the alert, date included on both
+bounds, not relative language.
 
 - Anchor to an event in the payload, not to the alert's fire time, when the two
   differ. Detection lag is routine and often large.
@@ -95,6 +150,20 @@ written as absolute timestamps from the alert, not relative language.
 - For conditions rather than events, the window is the exposure window —
   introduction to remediation — which may be months. Use it even when you
   expect retention to fall short, and say that you expect it to.
+- For a current-state query — configuration, inventory, classification,
+  current grants — write "state as of now". When history matters (prior
+  object versions, earlier policy versions), add the version or exposure
+  window alongside it as absolute timestamps.
+- When the correct bound is a field value the payload does not contain — the
+  topmost ancestor's process start time, a resource's creation time — name
+  the field and give the latest possible absolute bound alongside it:
+  "`ProcessStartTime` of w3wp.exe (not in payload; no later than
+  2026-09-30T14:07:22Z) to now."
+- For authorization, approval, or engagement records, the question is what
+  was in effect at a moment, not what happened across a range: write
+  "in effect at <timestamp>." When that moment is itself a field the payload
+  does not contain, name the field and give the absolute range it must fall
+  in.
 - State the source's delivery lag when a null result near the alert time would
   otherwise read as absence.
 
@@ -137,7 +206,8 @@ did. Overcalling on properties alone produces confident verdicts that collapse
 under the first real query.
 Example: an unverified publisher, a 29-hour-old app registration, and a 03:14
 consent are three indicators. None of them shows the token was ever exercised
-— that requires service principal sign-in logs.
+— that requires non-interactive user sign-in logs filtered to the app,
+because the consent is delegated.
 
 **A hypothesis you cannot query is not a hypothesis.**
 Every "Confirmed if" clause names a specific log source, a specific field or
@@ -170,6 +240,18 @@ Example: on a suspicious IAM grant, pull CloudTrail and check for other
 affected principals first. Ask the engineer after the log shows the activity
 is isolated to their session — not before.
 
+## Failure modes
+Three named failures account for most bad handoffs. Run this check on the
+filled template before emitting it.
+
+| Failure mode | How it shows up in output | Prevented by | Check before emitting |
+| --- | --- | --- | --- |
+| Confident verdict without evidence | "Malicious, High" resting on indicators or the vendor's label | Indicators are not corroboration; Citation | Does a Malicious call cite an Observed action, not a property of the entity? |
+| Generic hypotheses | "Confirmed if logs show malicious activity" | A hypothesis you cannot query is not a hypothesis; Mechanism, not category | Does every Confirmed-if line fail the substitution test? |
+| Null telemetry read as a negative finding | "No S3 data events, so no exfiltration" | Absent telemetry is not a negative finding; Windows | Does every request on optional telemetry state the dependency, and does every "nothing found" read as unresolved? |
+
+If any check fails, fix the handoff; do not emit it with a caveat.
+
 ## Reference map
 
 Read exactly one source file per alert, chosen at workflow step 2. Read the
@@ -194,8 +276,6 @@ When an alert spans two classes, read both and say which one you scored
 against. An instance-credential exfiltration finding is AWS identity; the host
 compromise that produced it is EDR.
 
-For the shape and depth of the output, follow the worked examples in `assets/`:
-`oauth_handoff.md` (Entra illicit OAuth consent) and `aws_handoff.md`
-(GuardDuty IAM privilege escalation). A blank template at `assets/handoff.md`
-is referenced by workflow step 6 but is not yet written; until it is, the
-examples define the section order.
+`assets/handoff.md` defines the output's section order. For depth, follow the
+worked examples in `assets/`: `oauth_handoff.md` (Entra illicit OAuth consent)
+and `aws_handoff.md` (GuardDuty IAM privilege escalation).

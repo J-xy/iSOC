@@ -32,9 +32,13 @@ soc-triage/
 │   ├── edr.md                     # CrowdStrike, Defender, SentinelOne
 │   ├── cspm.md                    # Wiz, Prisma, Orca, Security Hub
 │   └── saas-identity.md           # Entra ID, Okta
-└── assets/                        # worked triage output
-    ├── aws_handoff.md             # GuardDuty IAM privilege escalation
-    └── oauth_handoff.md           # Entra ID illicit OAuth consent
+├── assets/
+│   ├── handoff.md                 # blank output template
+│   ├── aws_handoff.md             # worked example: GuardDuty IAM privilege escalation
+│   └── oauth_handoff.md           # worked example: Entra ID illicit OAuth consent
+└── tests/                         # synthetic input alerts for the worked examples
+    ├── aws_alert.json
+    └── oauth_alert.json
 ```
 
 ## Status
@@ -49,9 +53,12 @@ containment clears and what it leaves, common false positives, hypothesis
 clauses, and severity — so the skill can rely on consistent structure whatever
 the source class.
 
-Outstanding: a blank output template at `assets/handoff.md`, referenced by
-workflow step 6 and not yet written. Until it exists the two worked examples
-define the section order.
+The output template at `assets/handoff.md` is written, and both worked
+examples follow it section for section. Their input alerts are synthetic
+payloads under `tests/`.
+
+Outstanding: run the skill against both input alerts and check the output
+against the template.
 
 The output structure has been stress-tested against two structurally different
 alerts — a GuardDuty IAM privilege-escalation sequence and an Entra ID illicit

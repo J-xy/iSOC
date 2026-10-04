@@ -1,0 +1,174 @@
+{
+  "_note": "Synthetic payload built for the aws_handoff.md worked example. All identifiers are fictional.",
+  "guardDutyFinding": {
+    "schemaVersion": "2.0",
+    "accountId": "471829336104",
+    "region": "us-east-1",
+    "id": "6cb8f4e2-1a09-4d77-b3e1-92f04c8a7d5e",
+    "type": "PrivilegeEscalation:IAMUser/AnomalousBehavior",
+    "title": "Anomalous privilege-escalation APIs invoked by ci-deploy-role",
+    "description": "APIs commonly used in privilege escalation tactics were invoked by principal ci-deploy-role. This activity has not been seen for this principal in the prior 90 days.",
+    "severity": 8.0,
+    "createdAt": "2026-07-31T18:42:11Z",
+    "updatedAt": "2026-07-31T18:49:30Z",
+    "resource": {
+      "resourceType": "AccessKey",
+      "accessKeyDetails": {
+        "accessKeyId": "ASIAEXAMPLECIDEPLOY0",
+        "principalId": "AROAEXAMPLECIDEPLOY:i-0a3f7c91e4b28d5a0",
+        "userName": "ci-deploy-role",
+        "userType": "AssumedRole"
+      }
+    },
+    "service": {
+      "serviceName": "guardduty",
+      "eventFirstSeen": "2026-07-31T18:40:52Z",
+      "eventLastSeen": "2026-07-31T18:47:03Z",
+      "count": 6,
+      "action": {
+        "actionType": "AWS_API_CALL",
+        "awsApiCallAction": {
+          "api": "AttachUserPolicy",
+          "serviceName": "iam.amazonaws.com",
+          "callerType": "Remote IP",
+          "remoteIpDetails": {
+            "ipAddressV4": "54.198.37.112",
+            "organization": { "asn": "14618", "asnOrg": "AMAZON-AES" }
+          }
+        }
+      },
+      "additionalInfo": {
+        "anomalies": {
+          "anomalousAPIs": {
+            "iam.amazonaws.com": [
+              "GetAccountAuthorizationDetails",
+              "ListUsers",
+              "CreateAccessKey",
+              "AttachUserPolicy"
+            ],
+            "s3.amazonaws.com": ["ListBuckets", "GetBucketPolicy"]
+          }
+        },
+        "profiledBehavior": {
+          "rareProfiledAPIsAccountProfiling": "CreateAccessKey,AttachUserPolicy",
+          "rareProfiledAPIsUserIdentityProfiling": "CreateAccessKey,AttachUserPolicy,GetAccountAuthorizationDetails"
+        }
+      }
+    }
+  },
+  "cloudTrailRecords": [
+    {
+      "eventTime": "2026-07-31T18:40:52Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "GetAccountAuthorizationDetails",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "54.198.37.112",
+      "userAgent": "aws-cli/2.17.20 Python/3.11.9 Linux/5.10.219-208.866.amzn2.x86_64 exe/x86_64.amzn.2 prompt/off command/iam.get-account-authorization-details",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::471829336104:assumed-role/ci-deploy-role/i-0a3f7c91e4b28d5a0",
+        "accessKeyId": "ASIAEXAMPLECIDEPLOY0",
+        "sessionContext": {
+          "sessionIssuer": { "arn": "arn:aws:iam::471829336104:role/ci-deploy-role" },
+          "attributes": { "mfaAuthenticated": "false", "creationDate": "2026-07-31T14:05:17Z" }
+        }
+      },
+      "requestParameters": { "filter": ["User", "Role", "LocalManagedPolicy"] },
+      "readOnly": true
+    },
+    {
+      "eventTime": "2026-07-31T18:41:30Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "ListUsers",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "54.198.37.112",
+      "userAgent": "aws-cli/2.17.20 Python/3.11.9 Linux/5.10.219-208.866.amzn2.x86_64 exe/x86_64.amzn.2 prompt/off command/iam.list-users",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::471829336104:assumed-role/ci-deploy-role/i-0a3f7c91e4b28d5a0",
+        "accessKeyId": "ASIAEXAMPLECIDEPLOY0"
+      },
+      "requestParameters": null,
+      "readOnly": true
+    },
+    {
+      "eventTime": "2026-07-31T18:43:02Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "CreateAccessKey",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "54.198.37.112",
+      "userAgent": "aws-cli/2.17.20 Python/3.11.9 Linux/5.10.219-208.866.amzn2.x86_64 exe/x86_64.amzn.2 prompt/off command/iam.create-access-key",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::471829336104:assumed-role/ci-deploy-role/i-0a3f7c91e4b28d5a0",
+        "accessKeyId": "ASIAEXAMPLECIDEPLOY0"
+      },
+      "requestParameters": { "userName": "svc-backup" },
+      "responseElements": {
+        "accessKey": {
+          "userName": "svc-backup",
+          "accessKeyId": "AKIAEXAMPLESVCBKUP01",
+          "status": "Active",
+          "createDate": "Jul 31, 2026 6:43:02 PM"
+        }
+      },
+      "readOnly": false
+    },
+    {
+      "eventTime": "2026-07-31T18:43:40Z",
+      "eventSource": "iam.amazonaws.com",
+      "eventName": "AttachUserPolicy",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "54.198.37.112",
+      "userAgent": "aws-cli/2.17.20 Python/3.11.9 Linux/5.10.219-208.866.amzn2.x86_64 exe/x86_64.amzn.2 prompt/off command/iam.attach-user-policy",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::471829336104:assumed-role/ci-deploy-role/i-0a3f7c91e4b28d5a0",
+        "accessKeyId": "ASIAEXAMPLECIDEPLOY0"
+      },
+      "requestParameters": {
+        "userName": "svc-backup",
+        "policyArn": "arn:aws:iam::aws:policy/AdministratorAccess"
+      },
+      "readOnly": false
+    },
+    {
+      "eventTime": "2026-07-31T18:45:18Z",
+      "eventSource": "s3.amazonaws.com",
+      "eventName": "ListBuckets",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "54.198.37.112",
+      "userAgent": "aws-cli/2.17.20 Python/3.11.9 Linux/5.10.219-208.866.amzn2.x86_64 exe/x86_64.amzn.2 prompt/off command/s3api.list-buckets",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::471829336104:assumed-role/ci-deploy-role/i-0a3f7c91e4b28d5a0",
+        "accessKeyId": "ASIAEXAMPLECIDEPLOY0"
+      },
+      "requestParameters": null,
+      "readOnly": true
+    },
+    {
+      "eventTime": "2026-07-31T18:47:03Z",
+      "eventSource": "s3.amazonaws.com",
+      "eventName": "GetBucketPolicy",
+      "awsRegion": "us-east-1",
+      "sourceIPAddress": "54.198.37.112",
+      "userAgent": "aws-cli/2.17.20 Python/3.11.9 Linux/5.10.219-208.866.amzn2.x86_64 exe/x86_64.amzn.2 prompt/off command/s3api.get-bucket-policy",
+      "userIdentity": {
+        "type": "AssumedRole",
+        "arn": "arn:aws:sts::471829336104:assumed-role/ci-deploy-role/i-0a3f7c91e4b28d5a0",
+        "accessKeyId": "ASIAEXAMPLECIDEPLOY0"
+      },
+      "requestParameters": { "bucketName": "prod-customer-exports" },
+      "readOnly": true
+    }
+  ],
+  "enrichment": {
+    "_source": "SOAR instance lookup attached to the alert",
+    "instanceId": "i-0a3f7c91e4b28d5a0",
+    "publicIpAddress": "54.198.37.112",
+    "privateIpAddress": "10.4.11.87",
+    "iamInstanceProfile": "arn:aws:iam::471829336104:instance-profile/ci-deploy-role",
+    "tags": { "Name": "ci-runner-03", "Exposure": "internet" }
+  }
+}

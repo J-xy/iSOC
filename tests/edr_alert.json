@@ -1,0 +1,84 @@
+{
+  "_note": "Synthetic held-out payload for testing. No worked example exists for this alert. All identifiers are fictional; hashes are placeholders.",
+  "detection": {
+    "detection_id": "ldt:7c2e91a4d03b4f6e8a15c9b2e7f04d18:30064771912",
+    "created_timestamp": "2026-09-30T14:07:41Z",
+    "max_severity_displayname": "High",
+    "max_confidence": 80,
+    "status": "new",
+    "device": {
+      "device_id": "7c2e91a4d03b4f6e8a15c9b2e7f04d18",
+      "hostname": "WEB-PRD-02",
+      "platform_name": "Windows",
+      "os_version": "Windows Server 2022",
+      "product_type_desc": "Server",
+      "local_ip": "10.20.4.15",
+      "external_ip": "198.51.100.24",
+      "machine_domain": "corp.acme.local",
+      "tags": ["SensorGroupingTags/env:prod", "SensorGroupingTags/role:iis"],
+      "agent_version": "7.18.18805.0",
+      "reduced_functionality_mode": "no"
+    },
+    "behaviors": [
+      {
+        "behavior_id": "41002",
+        "timestamp": "2026-09-30T14:07:22Z",
+        "tactic": "Discovery",
+        "technique": "System Owner/User Discovery",
+        "technique_id": "T1033",
+        "display_name": "WebServerShellSpawn",
+        "description": "A web server process spawned a command shell that ran reconnaissance commands.",
+        "severity": 70,
+        "confidence": 80,
+        "filename": "cmd.exe",
+        "filepath": "\\Device\\HarddiskVolume2\\Windows\\System32\\cmd.exe",
+        "cmdline": "cmd.exe /c whoami & ipconfig /all",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000c0d0e1",
+        "user_name": "IIS APPPOOL\\DefaultAppPool",
+        "parent_details": {
+          "parent_process_graph_id": "pid:7c2e91a4d03b4f6e8a15c9b2e7f04d18:5520",
+          "parent_cmdline": "c:\\windows\\system32\\inetsrv\\w3wp.exe -ap \"DefaultAppPool\" -v \"v4.0\" -l \"webengine4.dll\" -a \\\\.\\pipe\\iisipm3f1c -h \"C:\\inetpub\\temp\\apppools\\DefaultAppPool\\DefaultAppPool.config\" -w \"\" -m 0 -t 20",
+          "parent_process_name": "w3wp.exe"
+        },
+        "pattern_disposition_description": "Detection, standard detection.",
+        "pattern_disposition_details": { "process_blocked": false, "kill_process": false }
+      },
+      {
+        "behavior_id": "41029",
+        "timestamp": "2026-09-30T14:07:31Z",
+        "tactic": "Execution",
+        "technique": "PowerShell",
+        "technique_id": "T1059.001",
+        "display_name": "EncodedPowerShellFromWebShell",
+        "description": "An encoded PowerShell command was launched from a shell whose parent is a web server process.",
+        "severity": 90,
+        "confidence": 80,
+        "filename": "powershell.exe",
+        "filepath": "\\Device\\HarddiskVolume2\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "cmdline": "powershell.exe -nop -w hidden -enc [command line truncated by sensor: 1244 chars]",
+        "sha256": "0000000000000000000000000000000000000000000000000000000000f1e2d3",
+        "user_name": "IIS APPPOOL\\DefaultAppPool",
+        "parent_details": {
+          "parent_process_graph_id": "pid:7c2e91a4d03b4f6e8a15c9b2e7f04d18:6188",
+          "parent_cmdline": "cmd.exe /c whoami & ipconfig /all",
+          "parent_process_name": "cmd.exe"
+        },
+        "network_accesses": [
+          {
+            "access_timestamp": "2026-09-30T14:07:31Z",
+            "access_type": 0,
+            "direction": "outbound",
+            "protocol": "TCP",
+            "remote_address": "203.0.113.45",
+            "remote_port": 80,
+            "local_address": "10.20.4.15",
+            "local_port": 51834,
+            "connection_blocked": true
+          }
+        ],
+        "pattern_disposition_description": "Prevention, process killed.",
+        "pattern_disposition_details": { "process_blocked": false, "kill_process": true }
+      }
+    ]
+  }
+}

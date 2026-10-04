@@ -1,0 +1,49 @@
+{
+  "_note": "Synthetic payload built for the oauth_handoff.md worked example. All identifiers are fictional.",
+  "alert": {
+    "id": "c3a91f07-5e2d-4b8a-a6f4-1d9e8b27c450",
+    "title": "Consent granted to untrusted application",
+    "productName": "Microsoft Entra ID",
+    "severity": "medium",
+    "category": "InitialAccess",
+    "createdDateTime": "2026-08-01T03:19:44Z",
+    "evidence": {
+      "ipAddress": "45.83.x.x",
+      "ipCategory": "hosting provider ASN, outside corporate ranges"
+    }
+  },
+  "auditEvent": {
+    "category": "ApplicationManagement",
+    "activityDisplayName": "Consent to application",
+    "activityDateTime": "2026-08-01T03:13:58Z",
+    "correlationId": "9f2b6c1e-7a44-4e0d-8b3a-52c1d7e9f018",
+    "result": "success",
+    "initiatedBy": {
+      "user": {
+        "userPrincipalName": "m.reyes@acmecorp.com",
+        "ipAddress": "45.83.x.x"
+      }
+    },
+    "targetResources": [
+      {
+        "type": "ServicePrincipal",
+        "displayName": "QuarterlyReports Connector",
+        "id": "e81c4a52-0b6f-4d39-9a17-3f6d2c8b5e04",
+        "modifiedProperties": [
+          { "displayName": "ConsentContext.IsAdminConsent", "newValue": "\"False\"" },
+          { "displayName": "ConsentContext.OnBehalfOfAll", "newValue": "\"False\"" },
+          { "displayName": "ConsentAction.Permissions", "newValue": "\"Scope: Mail.Read Mail.Send offline_access User.Read\"" },
+          { "displayName": "TargetId.ServicePrincipalNames", "newValue": "\"7d1e9a3f-2b88-4c10-9f55-c0aa41e2b6d1\"" }
+        ]
+      }
+    ]
+  },
+  "application": {
+    "appId": "7d1e9a3f-2b88-4c10-9f55-c0aa41e2b6d1",
+    "displayName": "QuarterlyReports Connector",
+    "createdDateTime": "2026-07-30T22:10:04Z",
+    "publisherDomain": "quarterlyreportsconnector.onmicrosoft.com",
+    "verifiedPublisher": {},
+    "signInAudience": "AzureADMultipleOrgs"
+  }
+}
