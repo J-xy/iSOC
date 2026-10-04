@@ -31,7 +31,9 @@ soc-triage/
 │   ├── aws-identity.md            # GuardDuty / CloudTrail / STS / S3
 │   ├── edr.md                     # CrowdStrike, Defender, SentinelOne
 │   ├── cspm.md                    # Wiz, Prisma, Orca, Security Hub
-│   └── saas-identity.md           # Entra ID, Okta
+│   ├── saas-identity.md           # Entra ID, Okta
+│   ├── iam_analyzer.py            # analyst-side IAM policy checker; the skill names it, never runs it
+│   └── iam_analyzer_test.py       # pytest cases for iam_analyzer
 ├── assets/
 │   ├── handoff.md                 # blank output template
 │   ├── aws_handoff.md             # worked example: GuardDuty IAM privilege escalation

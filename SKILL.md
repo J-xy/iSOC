@@ -272,6 +272,11 @@ severity. Pull field names and log source names from the file rather than from
 memory — an evidence request naming a field that does not exist is worse than
 one that is vague, because the analyst will run it.
 
+`references/iam_analyzer.py` is an analyst-side helper that lists overly broad
+`Allow` statements in an IAM policy. Never run it — that is a tool call. When
+a principal's full policy set would settle a question, name it in the evidence
+request for the analyst to run.
+
 When an alert spans two classes, read both and say which one you scored
 against. An instance-credential exfiltration finding is AWS identity; the host
 compromise that produced it is EDR.
